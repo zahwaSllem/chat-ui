@@ -44,16 +44,146 @@ body {
   transition: background 0.25s, color 0.25s;
 }
 
+.app {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  font-family: system-ui, "Segoe UI", Tahoma, sans-serif;
+}
+
 .page {
+  flex: 1;
+  min-width: 0;
   max-width: 720px;
   margin: 0 auto;
   padding: 16px;
-  height: 100vh;
-  height: 100dvh;
   display: flex;
   flex-direction: column;
   gap: 12px;
-  font-family: system-ui, "Segoe UI", Tahoma, sans-serif;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 260px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 12px;
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+}
+
+.sidebar .new-chat-btn {
+  width: 100%;
+}
+
+.chat-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.chat-item {
+  display: flex;
+  align-items: center;
+  border-radius: 10px;
+  border: 1px solid transparent;
+}
+
+.chat-item:hover {
+  background: var(--chat-bg);
+}
+
+.chat-item.active {
+  background: var(--code-bg);
+  border-color: var(--accent);
+}
+
+.chat-item-title {
+  flex: 1;
+  min-width: 0;
+  padding: 10px;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.chat-item.active .chat-item-title {
+  font-weight: 600;
+}
+
+.chat-item-delete {
+  width: 26px;
+  height: 26px;
+  margin-inline-end: 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.chat-item:hover .chat-item-delete,
+.chat-item.active .chat-item-delete,
+.chat-item-delete:focus-visible {
+  opacity: 1;
+}
+
+.chat-item-delete:hover {
+  color: #e5484d;
+}
+
+.menu-btn,
+.backdrop {
+  display: none;
+}
+
+@media (max-width: 720px) {
+  .sidebar {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    inset-inline-start: 0;
+    z-index: 20;
+    transform: translateX(100%);
+    transition: transform 0.25s ease;
+    box-shadow: var(--shadow);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 10;
+    background: rgba(0, 0, 0, 0.45);
+  }
+
+  .menu-btn {
+    display: inline-block;
+  }
+
+  .chat-item-delete {
+    opacity: 1;
+  }
 }
 
 /* Header */
