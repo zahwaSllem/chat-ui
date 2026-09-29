@@ -25,7 +25,17 @@ function loadTheme() {
 }
 
 export default function App() {
-  const [messages, setMessages] = useState(loadMessages);
+ const [messages, setMessages] = useState(() => {
+  try {
+    const saved = localStorage.getItem("chat-messages");
+    return saved ? JSON.parse(saved) : [];
+  } catch {
+    return [];
+  }
+});
+useEffect(() => {
+  localStorage.setItem("chat-messages", JSON.stringify(messages));
+}, [messages]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState(loadTheme);
