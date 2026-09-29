@@ -1,9 +1,60 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import "./App.css";
+
+const STORAGE_KEY = "chat-zahwa:messages";
+const THEME_KEY = "chat-zahwa:theme";
+
+function loadMessages() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
+  }
+}
+
+function loadTheme() {
+  try {
+    const saved = localStorage.getItem(THEME_KEY);
+    if (saved === "light" || saved === "dark") return saved;
+  } catch {
+    // ignore
+  }
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 export default function App() {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(loadMessages);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState(loadTheme);
+  const bottomRef = useRef(null);
+  const inputRef = useRef(null);
+
+  // Auto-scroll to the latest message (and to the typing indicator)
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages, loading]);
+
+  // Persist the conversation
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+    } catch {
+      // storage full or unavailable
+    }
+  }, [messages]);
+
+  // Apply and persist the theme
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme;
+    try {
+      localStorage.setItem(THEME_KEY, theme);
+    } catch {
+      // ignore
+    }
+  }, [theme]);
 
   async function send() {
     if (!input.trim() || loading) return;
@@ -26,44 +77,74 @@ export default function App() {
     }
 
     setLoading(false);
+    inputRef.current?.focus();
+  }
+
+  function newChat() {
+    if (loading) return;
+    setMessages([]);
+    setInput("");
+    inputRef.current?.focus();
   }
 
   return (
-    <div dir="rtl" style={styles.page}>
-      <h1 style={styles.title}>Chat Zahwa</h1>
+    <div dir="rtl" className="page">
+      <header className="header">
+        <h1 className="title">Chat Zahwa</h1>
+        <div className="header-actions">
+          <button
+            className="icon-btn"
+            onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+            title={theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}
+            aria-label="تبديل الوضع"
+          >
+            {theme === "dark" ? "☀️" : "🌙"}
+          </button>
+          <button className="new-chat-btn" onClick={newChat} disabled={loading || messages.length === 0}>
+            + محادثة جديدة
+          </button>
+        </div>
+      </header>
 
-      <div style={styles.chat}>
+      <main className="chat">
+        {messages.length === 0 && !loading && (
+          <div className="empty">
+            <div className="empty-icon">💬</div>
+            <p>ابدئي المحادثة بكتابة رسالة</p>
+          </div>
+        )}
+
         {messages.map((m, i) => (
-           <div key={i} dir="auto" style={m.role === "user" ? styles.user : styles.bot}>
+          <div key={i} dir="auto" className={`bubble ${m.role === "user" ? "user" : "bot"}`}>
             <ReactMarkdown>{m.text}</ReactMarkdown>
           </div>
         ))}
-        {loading && <div style={styles.bot}>بيفكر...</div>}
-      </div>
 
-      <div style={styles.inputRow}>
+        {loading && (
+          <div className="bubble bot typing" aria-label="بيكتب...">
+            <span />
+            <span />
+            <span />
+          </div>
+        )}
+
+        <div ref={bottomRef} />
+      </main>
+
+      <footer className="input-row">
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
           placeholder="اكتبي رسالتك..."
-          style={styles.input}
+          className="input"
+          autoFocus
         />
-        <button onClick={send} disabled={loading} style={styles.button}>
+        <button onClick={send} disabled={loading || !input.trim()} className="send-btn">
           إرسال
         </button>
-      </div>
+      </footer>
     </div>
   );
 }
-
-const styles = {
-  page: { maxWidth: 600, margin: "0 auto", padding: 20, height: "100vh", boxSizing: "border-box", display: "flex", flexDirection: "column", fontFamily: "system-ui, sans-serif" },
-  title: { textAlign: "center", fontSize: 24 },
-  chat: { flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", gap: 10, padding: 12, background: "#f3f2f8", borderRadius: 14 },
-  user: { alignSelf: "flex-start", background: "#6c5ce7", color: "white", padding: "10px 14px", borderRadius: 16, maxWidth: "80%" },
-  bot: { alignSelf: "flex-end", background: "white", color: "#222", padding: "10px 14px", borderRadius: 16, maxWidth: "80%", whiteSpace: "pre-wrap" },
-  inputRow: { display: "flex", gap: 8, marginTop: 12 },
-  input: { flex: 1, padding: 12, borderRadius: 10, border: "1px solid #ccc", fontSize: 16 },
-  button: { padding: "12px 20px", borderRadius: 10, border: "none", background: "#6c5ce7", color: "white", fontSize: 16, cursor: "pointer" },
-};
