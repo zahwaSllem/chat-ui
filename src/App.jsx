@@ -66,6 +66,21 @@ function loadTheme() {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
 }
 
+// Temporary bridge to the kanban board until Supabase is ready
+function saveTasksToKanban(newTasks) {
+  try {
+    const existing = JSON.parse(localStorage.getItem("kanban-tasks") || "[]");
+    const added = newTasks.map((task) => ({
+      ...task,
+      id: `${Date.now()}-${Math.random()}`,
+      status: "todo",
+    }));
+    localStorage.setItem("kanban-tasks", JSON.stringify([...existing, ...added]));
+  } catch {
+    // storage full or unavailable
+  }
+}
+
 const newestFirst = (a, b) => b.createdAt - a.createdAt;
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
@@ -179,6 +194,7 @@ function ChatPage({ hidden }) {
       });
       const data = await res.json();
       reply = data.reply;
+      if (Array.isArray(data.tasks)) saveTasksToKanban(data.tasks);
     } catch {
       reply = t("chat.serverError");
     }

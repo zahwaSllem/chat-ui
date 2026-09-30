@@ -7,52 +7,63 @@ const COLUMNS = ["todo", "progress", "done"];
 
 const PRIORITY_EMOJI = { urgent: "🔴", important: "🟡", normal: "🟢" };
 
-const INITIAL_TASKS = {
-  todo: [
-    { id: "t1", priority: "urgent" },
-    { id: "t2", priority: "important" },
-    { id: "t3", priority: "normal" },
-  ],
-  progress: [
-    { id: "t4", priority: "important" },
-    { id: "t5", priority: "normal" },
-  ],
-  done: [
-    { id: "t6", priority: "urgent" },
-    { id: "t7", priority: "normal" },
-  ],
-};
+const TASKS_KEY = "kanban-tasks";
 
-function move(state, source, destination) {
-  const from = [...state[source.droppableId]];
-  const [item] = from.splice(source.index, 1);
-  if (source.droppableId === destination.droppableId) {
-    from.splice(destination.index, 0, item);
-    return { ...state, [source.droppableId]: from };
+// Chat saves priorities as high/medium/low; the card styles use urgent/important/normal
+const PRIORITY_MAP = { high: "urgent", medium: "important", low: "normal" };
+
+function loadTasks() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(TASKS_KEY) || "[]");
+    return Array.isArray(saved) ? saved : [];
+  } catch {
+    return [];
   }
-  const to = [...state[destination.droppableId]];
-  to.splice(destination.index, 0, item);
-  return { ...state, [source.droppableId]: from, [destination.droppableId]: to };
+}
+
+function saveTasks(tasks) {
+  try {
+    localStorage.setItem(TASKS_KEY, JSON.stringify(tasks));
+  } catch {
+    // storage full or unavailable
+  }
+}
+
+const inColumn = (tasks, colId) => tasks.filter((task) => task.status === colId);
+
+function move(tasks, source, destination) {
+  const cols = Object.fromEntries(COLUMNS.map((c) => [c, inColumn(tasks, c)]));
+  const [item] = cols[source.droppableId].splice(source.index, 1);
+  cols[destination.droppableId].splice(destination.index, 0, {
+    ...item,
+    status: destination.droppableId,
+  });
+  return COLUMNS.flatMap((c) => cols[c]);
 }
 
 export default function KanbanBoard() {
   const { t, dir } = useTranslation();
-  const [tasks, setTasks] = useState(INITIAL_TASKS);
+  const [tasks, setTasks] = useState(loadTasks);
   const [landedId, setLandedId] = useState(null);
 
-  const onDragEnd = useCallback(({ source, destination, draggableId }) => {
-    if (!destination) return;
-    if (source.droppableId === destination.droppableId && source.index === destination.index) return;
-    setTasks((prev) => move(prev, source, destination));
-    setLandedId(draggableId);
-  }, []);
+  const onDragEnd = useCallback(
+    ({ source, destination, draggableId }) => {
+      if (!destination) return;
+      if (source.droppableId === destination.droppableId && source.index === destination.index) return;
+      const next = move(tasks, source, destination);
+      setTasks(next);
+      saveTasks(next);
+      setLandedId(draggableId);
+    },
+    [tasks]
+  );
 
   return (
     <div dir={dir} className="kanban">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="kanban-board">
           {COLUMNS.map((colId, i) => {
-            const items = tasks[colId];
+            const items = inColumn(tasks, colId);
             return (
               <section
                 key={colId}
@@ -76,6 +87,7 @@ export default function KanbanBoard() {
                       }`}
                     >
                       {items.map((task, index) => {
+                        const priority = PRIORITY_MAP[task.priority] ?? "normal";
                         return (
                           <Draggable key={task.id} draggableId={task.id} index={index}>
                             {(drag, snap) => (
@@ -95,14 +107,12 @@ export default function KanbanBoard() {
                                     landedId === task.id && setLandedId(null)
                                   }
                                 >
-                                  <span className={`priority priority-${task.priority}`}>
-                                    {PRIORITY_EMOJI[task.priority]} {t(`kanban.priority.${task.priority}`)}
+                                  <span className={`priority priority-${priority}`}>
+                                    {PRIORITY_EMOJI[priority]} {t(`kanban.priority.${priority}`)}
                                   </span>
-                                  <h3 className="task-title">{t(`kanban.tasks.${task.id}.title`)}
+                                  <h3 className="task-title" dir="auto">
+                                    {task.text}
                                   </h3>
-                                  {t(`kanban.tasks.${task.id}.note`) && (
-                                    <p className="task-note">{t(`kanban.tasks.${task.id}.note`)}</p>
-                                  )}
                                 </article>
                               </div>
                             )}
