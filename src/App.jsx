@@ -64,6 +64,7 @@ function loadTheme() {
 }
 
 const newestFirst = (a, b) => b.createdAt - a.createdAt;
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 export default function App() {
   const [initial] = useState(loadState);
@@ -125,7 +126,7 @@ export default function App() {
 
     let reply;
     try {
-      const res = await fetch("http://localhost:3001/chat", {
+      const res = await fetch(`${API_URL}/chat`,  {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: newMessages }),
