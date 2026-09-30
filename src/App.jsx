@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
+import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
+import KanbanBoard from "./KanbanBoard.jsx";
 import "./App.css";
+import "./kanban.css";
 
 const CHATS_KEY = "chats";
 const ACTIVE_KEY = "activeChatId";
@@ -67,6 +70,39 @@ const newestFirst = (a, b) => b.createdAt - a.createdAt;
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
 
 export default function App() {
+  const { pathname } = useLocation();
+  const onTasks = pathname.startsWith("/tasks");
+
+  return (
+    <div dir="rtl" className="shell">
+      <nav className="nav">
+        <NavLink to="/" end className="nav-tab">
+          💬 الشات
+        </NavLink>
+        <NavLink to="/tasks" className="nav-tab">
+          ✅ المهام
+        </NavLink>
+      </nav>
+
+      {/* Chat stays mounted so a pending reply isn't lost while on the tasks tab */}
+      <ChatPage hidden={onTasks} />
+
+      <Routes>
+        <Route
+          path="/tasks"
+          element={
+            <div className="page-transition">
+              <KanbanBoard />
+            </div>
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </div>
+  );
+}
+
+function ChatPage({ hidden }) {
   const [initial] = useState(loadState);
   const [chats, setChats] = useState(initial.chats);
   const [activeId, setActiveId] = useState(initial.activeId);
@@ -181,7 +217,7 @@ export default function App() {
   }
 
   return (
-    <div dir="rtl" className="app">
+    <div dir="rtl" className={`app ${hidden ? "hidden" : "page-fade"}`}>
       {sidebarOpen && <div className="backdrop" onClick={() => setSidebarOpen(false)} />}
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
