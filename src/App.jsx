@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { NavLink, Navigate, Route, Routes, useLocation } from "react-router-dom";
 import KanbanBoard from "./KanbanBoard.jsx";
+import { useTranslation } from "./hooks/useTranslation";
 import "./App.css";
 import "./kanban.css";
 
@@ -9,7 +10,6 @@ const CHATS_KEY = "chats";
 const ACTIVE_KEY = "activeChatId";
 const THEME_KEY = "chat-zahwa:theme";
 const LEGACY_KEYS = ["chat-messages", "chat-zahwa:messages"];
-const NEW_CHAT_TITLE = "محادثة جديدة";
 
 function makeChat(messages = []) {
   const first = messages.find((m) => m.role === "user");
@@ -72,16 +72,25 @@ const newestFirst = (a, b) => b.createdAt - a.createdAt;
 export default function App() {
   const { pathname } = useLocation();
   const onTasks = pathname.startsWith("/tasks");
+  const { t, lang, dir, toggleLang } = useTranslation();
 
   return (
-    <div dir="rtl" className="shell">
+    <div dir={dir} className="shell">
       <nav className="nav">
         <NavLink to="/" end className="nav-tab">
-          💬 الشات
+          {t("nav.chat")}
         </NavLink>
         <NavLink to="/tasks" className="nav-tab">
-          ✅ المهام
+          {t("nav.tasks")}
         </NavLink>
+        <button
+          className="lang-btn"
+          onClick={toggleLang}
+          title={t("nav.switchLang")}
+          aria-label={t("nav.switchLang")}
+        >
+          🌐 {lang === "ar" ? "🇸🇦" : "🇺🇸"}
+        </button>
       </nav>
 
       {/* Chat stays mounted so a pending reply isn't lost while on the tasks tab */}
@@ -103,6 +112,7 @@ export default function App() {
 }
 
 function ChatPage({ hidden }) {
+  const { t, dir } = useTranslation();
   const [initial] = useState(loadState);
   const [chats, setChats] = useState(initial.chats);
   const [activeId, setActiveId] = useState(initial.activeId);
@@ -170,7 +180,7 @@ function ChatPage({ hidden }) {
       const data = await res.json();
       reply = data.reply;
     } catch {
-      reply = "مقدرتش أوصل للسيرفر، اتأكدي إنه شغال.";
+      reply = t("chat.serverError");
     }
 
     // Goes to the chat it was sent from, even if the user switched away or deleted it
@@ -204,7 +214,7 @@ function ChatPage({ hidden }) {
   }
 
   function deleteChat(id) {
-    if (!window.confirm("مسح المحادثة دي؟")) return;
+    if (!window.confirm(t("chat.confirmDelete"))) return;
     const remaining = chats.filter((c) => c.id !== id);
     if (remaining.length === 0) {
       const chat = makeChat();
@@ -217,12 +227,12 @@ function ChatPage({ hidden }) {
   }
 
   return (
-    <div dir="rtl" className={`app ${hidden ? "hidden" : "page-fade"}`}>
+    <div dir={dir} className={`app ${hidden ? "hidden" : "page-fade"}`}>
       {sidebarOpen && <div className="backdrop" onClick={() => setSidebarOpen(false)} />}
 
       <aside className={`sidebar ${sidebarOpen ? "open" : ""}`}>
         <button className="new-chat-btn" onClick={newChat}>
-          + {NEW_CHAT_TITLE}
+          + {t("chat.newChat")}
         </button>
         <ul className="chat-list">
           {sortedChats.map((c) => (
@@ -233,13 +243,13 @@ function ChatPage({ hidden }) {
                 onClick={() => openChat(c.id)}
                 aria-current={c.id === activeChat.id ? "true" : undefined}
               >
-                {c.title || NEW_CHAT_TITLE}
+                {c.title || t("chat.newChat")}
               </button>
               <button
                 className="chat-item-delete"
                 onClick={() => deleteChat(c.id)}
-                title="مسح"
-                aria-label="مسح المحادثة"
+                title={t("chat.delete")}
+                aria-label={t("chat.deleteChat")}
               >
                 ✕
               </button>
@@ -253,17 +263,17 @@ function ChatPage({ hidden }) {
           <button
             className="icon-btn menu-btn"
             onClick={() => setSidebarOpen(true)}
-            aria-label="القائمة"
+            aria-label={t("chat.menu")}
           >
             ☰
           </button>
-          <h1 className="title">Chat Zahwa</h1>
+          <h1 className="title">{t("chat.title")}</h1>
           <div className="header-actions">
             <button
               className="icon-btn"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              title={theme === "dark" ? "الوضع الفاتح" : "الوضع الداكن"}
-              aria-label="تبديل الوضع"
+              title={theme === "dark" ? t("chat.lightMode") : t("chat.darkMode")}
+              aria-label={t("chat.toggleTheme")}
             >
               {theme === "dark" ? "☀️" : "🌙"}
             </button>
@@ -274,7 +284,7 @@ function ChatPage({ hidden }) {
           {messages.length === 0 && !loading && (
             <div className="empty">
               <div className="empty-icon">💬</div>
-              <p>ابدئي المحادثة بكتابة رسالة</p>
+              <p>{t("chat.empty")}</p>
             </div>
           )}
 
@@ -285,7 +295,7 @@ function ChatPage({ hidden }) {
           ))}
 
           {loading && (
-            <div className="bubble bot typing" aria-label="بيكتب...">
+            <div className="bubble bot typing" aria-label={t("chat.thinking")}>
               <span />
               <span />
               <span />
@@ -301,12 +311,12 @@ function ChatPage({ hidden }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && send()}
-            placeholder="اكتبي رسالتك..."
+            placeholder={t("chat.placeholder")}
             className="input"
             autoFocus
           />
           <button onClick={send} disabled={loading || !input.trim()} className="send-btn">
-            إرسال
+            {t("chat.send")}
           </button>
         </footer>
       </div>

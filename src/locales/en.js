@@ -1,0 +1,45 @@
+export default {
+  nav: {
+    chat: "💬 Chat",
+    tasks: "✅ Tasks",
+    switchLang: "Switch language",
+  },
+  chat: {
+    title: "Chat Zahwa",
+    placeholder: "Type your message...",
+    send: "Send",
+    thinking: "Thinking...",
+    empty: "Start the conversation",
+    newChat: "New Chat",
+    deleteChat: "Delete chat",
+    delete: "Delete",
+    confirmDelete: "Delete this chat?",
+    menu: "Menu",
+    toggleTheme: "Toggle theme",
+    lightMode: "Light mode",
+    darkMode: "Dark mode",
+    serverError: "Couldn't reach the server. Make sure it's running.",
+  },
+  kanban: {
+    columns: {
+      todo: "📋 To Do",
+      progress: "⚡ In Progress",
+      done: "✅ Done",
+    },
+    priority: {
+      urgent: "Urgent",
+      important: "Important",
+      normal: "Normal",
+    },
+    emptyColumn: "Drag a task here",
+    tasks: {
+      t1: { title: "Fix login bug", note: "The token expires too early on mobile" },
+      t2: { title: "Write tests for the chat API", note: "Jest + supertest" },
+      t3: { title: "Update the README", note: "Setup and deployment steps" },
+      t4: { title: "Connect the UI to Supabase", note: "Auth and the chats table" },
+      t5: { title: "Improve message list performance", note: "Virtualization for long chats" },
+      t6: { title: "Prepare the project for deployment", note: "Env variables and build" },
+      t7: { title: "Add dark mode", note: "" },
+    },
+  },
+};

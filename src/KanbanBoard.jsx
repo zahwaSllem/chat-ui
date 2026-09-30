@@ -1,32 +1,25 @@
 import { useCallback, useState } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { useTranslation } from "./hooks/useTranslation";
 import "./kanban.css";
 
-const COLUMNS = [
-  { id: "todo", title: "📋 لازم أعمله" },
-  { id: "progress", title: "⚡ شغالة عليه" },
-  { id: "done", title: "✅ خلصت" },
-];
+const COLUMNS = ["todo", "progress", "done"];
 
-const PRIORITIES = {
-  urgent: { label: "عاجل", emoji: "🔴" },
-  important: { label: "مهم", emoji: "🟡" },
-  normal: { label: "عادي", emoji: "🟢" },
-};
+const PRIORITY_EMOJI = { urgent: "🔴", important: "🟡", normal: "🟢" };
 
 const INITIAL_TASKS = {
   todo: [
-    { id: "t1", title: "إصلاح باج تسجيل الدخول", note: "الـ token بيخلص بدري على الموبايل", priority: "urgent" },
-    { id: "t2", title: "كتابة اختبارات لـ API الشات", note: "Jest + supertest", priority: "important" },
-    { id: "t3", title: "تحديث الـ README", note: "خطوات التشغيل والنشر", priority: "normal" },
+    { id: "t1", priority: "urgent" },
+    { id: "t2", priority: "important" },
+    { id: "t3", priority: "normal" },
   ],
   progress: [
-    { id: "t4", title: "ربط الواجهة بـ Supabase", note: "المصادقة وجدول المحادثات", priority: "important" },
-    { id: "t5", title: "تحسين أداء قائمة الرسائل", note: "virtualization للمحادثات الطويلة", priority: "normal" },
+    { id: "t4", priority: "important" },
+    { id: "t5", priority: "normal" },
   ],
   done: [
-    { id: "t6", title: "تجهيز المشروع للنشر", note: "متغيرات البيئة و build", priority: "urgent" },
-    { id: "t7", title: "إضافة الوضع الداكن", note: "", priority: "normal" },
+    { id: "t6", priority: "urgent" },
+    { id: "t7", priority: "normal" },
   ],
 };
 
@@ -43,6 +36,7 @@ function move(state, source, destination) {
 }
 
 export default function KanbanBoard() {
+  const { t, dir } = useTranslation();
   const [tasks, setTasks] = useState(INITIAL_TASKS);
   const [landedId, setLandedId] = useState(null);
 
@@ -54,25 +48,25 @@ export default function KanbanBoard() {
   }, []);
 
   return (
-    <div dir="rtl" className="kanban">
+    <div dir={dir} className="kanban">
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="kanban-board">
-          {COLUMNS.map((col, i) => {
-            const items = tasks[col.id];
+          {COLUMNS.map((colId, i) => {
+            const items = tasks[colId];
             return (
               <section
-                key={col.id}
-                className={`kanban-col col-${col.id}`}
+                key={colId}
+                className={`kanban-col col-${colId}`}
                 style={{ "--i": i }}
               >
                 <header className="col-header">
-                  <h2 className="col-title">{col.title}</h2>
+                  <h2 className="col-title">{t(`kanban.columns.${colId}`)}</h2>
                   <span key={items.length} className="count-badge">
                     {items.length}
                   </span>
                 </header>
 
-                <Droppable droppableId={col.id}>
+                <Droppable droppableId={colId}>
                   {(provided, snapshot) => (
                     <div
                       ref={provided.innerRef}
@@ -82,7 +76,6 @@ export default function KanbanBoard() {
                       }`}
                     >
                       {items.map((task, index) => {
-                        const p = PRIORITIES[task.priority];
                         return (
                           <Draggable key={task.id} draggableId={task.id} index={index}>
                             {(drag, snap) => (
@@ -103,10 +96,13 @@ export default function KanbanBoard() {
                                   }
                                 >
                                   <span className={`priority priority-${task.priority}`}>
-                                    {p.emoji} {p.label}
+                                    {PRIORITY_EMOJI[task.priority]} {t(`kanban.priority.${task.priority}`)}
                                   </span>
-                                  <h3 className="task-title">{task.title}</h3>
-                                  {task.note && <p className="task-note">{task.note}</p>}
+                                  <h3 className="task-title">{t(`kanban.tasks.${task.id}.title`)}
+                                  </h3>
+                                  {t(`kanban.tasks.${task.id}.note`) && (
+                                    <p className="task-note">{t(`kanban.tasks.${task.id}.note`)}</p>
+                                  )}
                                 </article>
                               </div>
                             )}
@@ -115,7 +111,7 @@ export default function KanbanBoard() {
                       })}
                       {provided.placeholder}
                       {items.length === 0 && !snapshot.isDraggingOver && (
-                        <div className="empty-col">اسحبي مهمة هنا</div>
+                        <div className="empty-col">{t("kanban.emptyColumn")}</div>
                       )}
                     </div>
                   )}

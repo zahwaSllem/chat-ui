@@ -1,0 +1,45 @@
+export default {
+  nav: {
+    chat: "💬 الشات",
+    tasks: "✅ المهام",
+    switchLang: "تغيير اللغة",
+  },
+  chat: {
+    title: "Chat Zahwa",
+    placeholder: "اكتبي رسالتك...",
+    send: "إرسال",
+    thinking: "بيفكر...",
+    empty: "ابدئي المحادثة بكتابة رسالة",
+    newChat: "محادثة جديدة",
+    deleteChat: "مسح المحادثة",
+    delete: "مسح",
+    confirmDelete: "مسح المحادثة دي؟",
+    menu: "القائمة",
+    toggleTheme: "تبديل الوضع",
+    lightMode: "الوضع الفاتح",
+    darkMode: "الوضع الداكن",
+    serverError: "مقدرتش أوصل للسيرفر، اتأكدي إنه شغال.",
+  },
+  kanban: {
+    columns: {
+      todo: "📋 لازم أعمله",
+      progress: "⚡ شغالة عليه",
+      done: "✅ خلصت",
+    },
+    priority: {
+      urgent: "عاجل",
+      important: "مهم",
+      normal: "عادي",
+    },
+    emptyColumn: "اسحبي مهمة هنا",
+    tasks: {
+      t1: { title: "إصلاح باج تسجيل الدخول", note: "الـ token بيخلص بدري على الموبايل" },
+      t2: { title: "كتابة اختبارات لـ API الشات", note: "Jest + supertest" },
+      t3: { title: "تحديث الـ README", note: "خطوات التشغيل والنشر" },
+      t4: { title: "ربط الواجهة بـ Supabase", note: "المصادقة وجدول المحادثات" },
+      t5: { title: "تحسين أداء قائمة الرسائل", note: "virtualization للمحادثات الطويلة" },
+      t6: { title: "تجهيز المشروع للنشر", note: "متغيرات البيئة و build" },
+      t7: { title: "إضافة الوضع الداكن", note: "" },
+    },
+  },
+};

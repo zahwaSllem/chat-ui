@@ -26,6 +26,32 @@
   border-bottom: 1px solid var(--border);
 }
 
+.nav {
+  position: relative;
+  align-items: flex-end;
+}
+
+.lang-btn {
+  position: absolute;
+  inset-inline-end: 16px;
+  top: 50%;
+  transform: translateY(-58%);
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.lang-btn:hover {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.45);
+}
+
 .nav-tab {
   position: relative;
   padding: 10px 22px 12px;
@@ -314,6 +340,13 @@
 
   .col-body {
     min-height: 120px;
+  }
+
+  .lang-btn {
+    position: static;
+    transform: none;
+    align-self: center;
+    margin-bottom: 6px;
   }
 
   .nav-tab {

@@ -166,7 +166,12 @@ body {
     box-shadow: var(--shadow);
   }
 
-  .sidebar.open {
+  :root[dir="ltr"] .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open,
+  :root[dir="ltr"] .sidebar.open {
     transform: translateX(0);
   }
 
