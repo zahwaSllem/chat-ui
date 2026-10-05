@@ -5,6 +5,9 @@ import KanbanBoard from "./KanbanBoard.jsx";
 import { useTranslation } from "./hooks/useTranslation";
 import "./App.css";
 import "./kanban.css";
+import Login from "./Login.jsx";
+import UserMenu from "./UserMenu.jsx";
+import { useAuth } from "./hooks/useAuth";
 
 const CHATS_KEY = "chats";
 const ACTIVE_KEY = "activeChatId";
@@ -88,10 +91,22 @@ export default function App() {
   const { pathname } = useLocation();
   const onTasks = pathname.startsWith("/tasks");
   const { t, lang, dir, toggleLang } = useTranslation();
+  const { user, loading: authLoading, signInWithGoogle, signOut } = useAuth();
+
+  if (authLoading) {
+    return (
+      <div className="auth-loading" role="status" aria-label={t("auth.loading")}>
+        <span className="login-spinner" aria-hidden="true" />
+      </div>
+    );
+  }
+
+  if (!user) return <Login onSignIn={signInWithGoogle} />;
 
   return (
     <div dir={dir} className="shell">
       <nav className="nav">
+        <UserMenu user={user} onSignOut={signOut} />
         <NavLink to="/" end className="nav-tab">
           {t("nav.chat")}
         </NavLink>

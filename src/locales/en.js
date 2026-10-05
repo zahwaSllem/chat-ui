@@ -5,7 +5,7 @@ export default {
     switchLang: "Switch language",
   },
   chat: {
-    title: "Chat Zahwa",
+    title: "Monjez",
     placeholder: "Type your message...",
     send: "Send",
     thinking: "Thinking...",
@@ -19,6 +19,20 @@ export default {
     lightMode: "Light mode",
     darkMode: "Dark mode",
     serverError: "Couldn't reach the server. Make sure it's running.",
+  },
+  login: {
+    appName: "Monjez",
+    headline: "Welcome back 👋",
+    subtitle: "An AI assistant that organizes your tasks and chats, so you can focus on what matters.",
+    google: "Continue with Google",
+    redirecting: "Redirecting…",
+    error: "Couldn't sign you in. Please try again.",
+    terms: "By continuing, you agree to the Terms of Service and Privacy Policy.",
+  },
+  auth: {
+    account: "Account menu",
+    signOut: "Sign out",
+    loading: "Loading…",
   },
   kanban: {
     columns: {

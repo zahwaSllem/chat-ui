@@ -5,7 +5,7 @@ export default {
     switchLang: "تغيير اللغة",
   },
   chat: {
-    title: "Chat Zahwa",
+    title: "Monjez",
     placeholder: "اكتبي رسالتك...",
     send: "إرسال",
     thinking: "بيفكر...",
@@ -19,6 +19,20 @@ export default {
     lightMode: "الوضع الفاتح",
     darkMode: "الوضع الداكن",
     serverError: "مقدرتش أوصل للسيرفر، اتأكدي إنه شغال.",
+  },
+  login: {
+    appName: "Monjez",
+    headline: "أهلاً بيكي من تاني 👋",
+    subtitle: "مساعد ذكي بينظم مهامك ومحادثاتك، عشان تركزي على اللي يهمك.",
+    google: "المتابعة باستخدام Google",
+    redirecting: "جاري التحويل…",
+    error: "معرفناش نسجل دخولك. حاولي تاني.",
+    terms: "بالمتابعة، أنتِ بتوافقي على شروط الخدمة وسياسة الخصوصية.",
+  },
+  auth: {
+    account: "قائمة الحساب",
+    signOut: "تسجيل الخروج",
+    loading: "جاري التحميل…",
   },
   kanban: {
     columns: {

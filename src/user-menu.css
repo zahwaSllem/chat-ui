@@ -1,0 +1,127 @@
+/* Sits in the nav bar, opposite the language button */
+.user-menu {
+  position: absolute;
+  inset-inline-start: 16px;
+  top: 50%;
+  transform: translateY(-58%);
+  z-index: 30;
+}
+
+.user-menu-btn {
+  display: block;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: var(--bg);
+  cursor: pointer;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.user-menu-btn:hover,
+.user-menu-btn[aria-expanded="true"] {
+  border-color: var(--accent);
+  box-shadow: 0 0 10px rgba(108, 92, 231, 0.45);
+}
+
+.user-menu-btn:focus-visible,
+.user-menu-signout:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+  flex-shrink: 0;
+}
+
+.user-avatar-initials {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(135deg, #6c5ce7, #e17bd0);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.user-menu-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  inset-inline-start: 0;
+  min-width: 230px;
+  max-width: calc(100vw - 32px);
+  padding: 8px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: var(--shadow), 0 12px 32px rgba(0, 0, 0, 0.25);
+  animation: user-pop 0.15s ease-out;
+}
+
+@keyframes user-pop {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.user-menu-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+
+.user-menu-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  font-size: 14px;
+}
+
+.user-menu-text strong,
+.user-menu-text span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-menu-text span {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: start;
+}
+
+.user-menu-signout {
+  width: 100%;
+  padding: 10px;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  font-size: 14px;
+  text-align: start;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.user-menu-signout:hover {
+  background: var(--code-bg);
+  color: #e5484d;
+}
+
+@media (max-width: 480px) {
+  .user-menu {
+    inset-inline-start: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .user-menu-pop {
+    animation: none;
+  }
+}
